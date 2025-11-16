@@ -1,2 +1,4 @@
 supabase
 sqlalchemy
+requests
+python-dotenv
