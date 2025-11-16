@@ -1,9 +1,7 @@
 import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-
-load_dotenv()
+from app.config import DB_CONNECTION_STRING
 
 DB_CONNECTION_STRING = os.getenv("DB_CONNECTION_STRING")
 
