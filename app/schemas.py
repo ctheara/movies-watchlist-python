@@ -29,3 +29,10 @@ class MovieWatchedResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+# Response model for analytics
+class AnalyticsResponse(BaseModel):
+    average_rating: Optional[float] = None
+    most_frequent_genre: Optional[str] = None
+    number_watched: int
+    total_movies: int

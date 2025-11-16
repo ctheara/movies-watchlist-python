@@ -25,6 +25,9 @@ def add_movie(db: Session, movie_data: schemas.MovieCreate):
 def get_movie_watchlist(db: Session):
     return db.query(models.Movie).filter(models.Movie.watched == False).all()
 
+def get_all_movies(db: Session):
+    return db.query(models.Movie).all()
+
 def get_movies_by_watched_status(db: Session, watched: bool):
     return db.query(models.Movie).filter(models.Movie.watched == watched).all()
 
@@ -42,3 +45,9 @@ def delete_movie(db: Session, imdb_id: str):
         db.delete(movie)
         db.commit()
         return movie
+
+def get_total_movies(db: Session):
+    return db.query(models.Movie).count()
+
+def get_watched_movies_count(db: Session):
+    return db.query(models.Movie).filter(models.Movie.watched == True).count()

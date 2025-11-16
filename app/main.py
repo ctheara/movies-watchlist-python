@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.analytics import compute_movie_stats
 from app.database import get_db
 from app import crud, schemas
 from app import omdb_client
@@ -62,3 +63,7 @@ def delete_movie(imdb_id: str, db: Session = Depends(get_db)):
     
     print(deleted_movie)
     return deleted_movie
+
+@app.get("/api/v1/analytics", response_model=schemas.AnalyticsResponse)
+def get_analytics(db: Session = Depends(get_db)):
+    return compute_movie_stats(db)

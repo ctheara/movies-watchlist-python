@@ -6,3 +6,4 @@ fastapi
 uvicorn
 pydantic
 psycopg2
+pandas
