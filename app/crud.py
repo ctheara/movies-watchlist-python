@@ -8,8 +8,11 @@ def add_movie(db: Session, movie_data: schemas.MovieCreate):
     db.refresh(movie)
     return movie
 
-def get_all_movies(db: Session):
-    return db.query(models.Movie).all()
+def get_movie_watchlist(db: Session):
+    return db.query(models.Movie).filter(models.Movie.watched == False).all()
+
+def get_movies_by_watched_status(db: Session, watched: bool):
+    return db.query(models.Movie).filter(models.Movie.watched == watched).all()
 
 def update_watched_status(db: Session, imdb_id: str, watched: bool):
     movie = db.query(models.Movie).filter(models.Movie.imdb_id == imdb_id).first()

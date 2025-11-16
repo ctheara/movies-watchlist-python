@@ -12,7 +12,7 @@ class MovieCreate(BaseModel):
     plot: Optional[str]
     poster_url: Optional[str]
 
-# Outgoing response model
+# Response model for getting movie details
 class MovieResponse(BaseModel):
     imdb_id: str
     title: str
@@ -23,6 +23,15 @@ class MovieResponse(BaseModel):
     poster_url: Optional[str] = None
     watched: bool
     date_added: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
+
+# Response model for updating watched status
+class MovieWatchedResponse(BaseModel):
+    imdb_id: str
+    title: str
+    watched: bool
 
     class Config:
         orm_mode = True
