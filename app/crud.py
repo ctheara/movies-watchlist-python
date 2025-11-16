@@ -1,4 +1,4 @@
-from sqlalchemy import Session
+from sqlalchemy.orm import Session
 from app import models, schemas
     
 def add_movie(db: Session, movie_data: schemas.MovieCreate):

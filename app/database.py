@@ -1,10 +1,19 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from app.config import DB_CONNECTION_STRING
 
-DB_CONNECTION_STRING = os.getenv("DB_CONNECTION_STRING")
+engine = create_engine(DB_CONNECTION_STRING, echo=True)  # echo=True is optional for debugging
 
-engine = create_engine(DB_CONNECTION_STRING)
+# Create a configured "Session" class
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+# Dependency function for FastAPI
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
