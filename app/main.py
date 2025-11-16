@@ -27,7 +27,17 @@ def get_watchlist(watched: Optional[bool] = None, db: Session = Depends(get_db))
     return crud.get_movies_by_watched_status(db, watched)
 
 # add movie to watchlist, input movie data
-# @app.post('/api/v1/movies')
+@app.post('/api/v1/movies', response_model=schemas.MovieResponse)
+def add_movie_to_watchlist(req_body: schemas.MovieCreate, db: Session = Depends(get_db)):
+    movie_data = omdb_client.fetch_movie_by_id(req_body.imdb_id)
+    if not movie_data or movie_data.get("Response") == "False":
+        raise HTTPException(status_code=404, detail="Movie not found")
+    
+    status, movie = crud.add_movie(db, movie_data)
+    if status == "already_exists":
+        raise HTTPException(status_code=400, detail="Movie is already in your watchlist")
+    
+    return movie
 
 # update watched status, input: imdb_id, watched(boolean), output: updated movie details
 @app.patch("/api/v1/movies/{imdb_id}/watched", response_model=schemas.MovieWatchedResponse)

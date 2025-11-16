@@ -2,11 +2,25 @@ from sqlalchemy.orm import Session
 from app import models, schemas
     
 def add_movie(db: Session, movie_data: schemas.MovieCreate):
-    movie = models.Movie(**movie_data.model_dump())
+    existing_movie = db.query(models.Movie).filter_by(imdb_id=movie_data["imdbID"]).first()
+    if existing_movie:
+        return "already_exists", existing_movie
+    
+    movie_dict = {
+        "imdb_id": movie_data["imdbID"],
+        "title": movie_data["Title"],
+        "year": movie_data["Year"],
+        "genre": movie_data["Genre"],
+        "rating": float(movie_data["imdbRating"]) if movie_data.get("imdbRating") not in [None, "N/A"] else None,
+        "plot": movie_data.get("Plot"),
+        "poster_url": movie_data.get("Poster")
+    }
+
+    movie = models.Movie(**movie_dict)
     db.add(movie)
     db.commit()
     db.refresh(movie)
-    return movie
+    return "created", movie
 
 def get_movie_watchlist(db: Session):
     return db.query(models.Movie).filter(models.Movie.watched == False).all()

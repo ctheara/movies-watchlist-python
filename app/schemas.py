@@ -5,12 +5,6 @@ from datetime import datetime
 # Incoming POST request
 class MovieCreate(BaseModel):
     imdb_id: str
-    title: str
-    year: str
-    genre: Optional[str]
-    rating: Optional[float] = None
-    plot: Optional[str]
-    poster_url: Optional[str]
 
 # Response model for getting movie details
 class MovieResponse(BaseModel):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, func
 from app.database import Base
 
 class Movie(Base):
@@ -9,8 +9,8 @@ class Movie(Base):
     title = Column(String, index=True, nullable=True)
     year = Column(String, nullable=True)
     genre = Column(String, nullable=True)
-    rating = Column(Float, nullable=True)  # maps to PostgreSQL float8 (double precision)
+    rating = Column(Float, nullable=True)
     plot = Column(String, nullable=True)
     poster_url = Column(String, nullable=True)
     watched = Column(Boolean, default=False)
-    date_added = Column(DateTime(timezone=True), nullable=True)  # timestamptz
+    date_added = Column(DateTime(timezone=True), server_default=func.now())
