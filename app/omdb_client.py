@@ -1,12 +1,10 @@
 import os
 import requests
 from app.config import OMDB_API_KEY
-
-OMDB_API_KEY = os.getenv('OMDB_API_KEY')
     
 def search_movies(title: str, api_key: str = OMDB_API_KEY) -> list:
     url = "http://www.omdbapi.com/"
-    params = {"apikey": OMDB_API_KEY, "s": title, "page": 1}
+    params = {"apikey": api_key, "s": title, "page": 1}
     response = requests.get(url, params=params)
     
     if response.status_code == 200:
