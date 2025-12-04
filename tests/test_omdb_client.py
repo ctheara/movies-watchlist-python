@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, Mock, ANY
 from app.omdb_client import search_movies, fetch_movie_by_id
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, Timeout
 
 MOCK_SEARCH_SUCCESS = {
     "Search": [
@@ -14,7 +14,7 @@ MOCK_SEARCH_SUCCESS = {
 
 # Test searching for movies by title
 @patch('app.omdb_client.requests.get')
-def test_search_movies_success(mock_get):
+def test_search_movies_success_multiple_results(mock_get):
     mock_response = Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = MOCK_SEARCH_SUCCESS
@@ -33,7 +33,7 @@ def test_search_movies_success(mock_get):
     mock_get.assert_called_once_with(expected_url, params=expected_params)
 
 @patch("app.omdb_client.requests.get")
-def test_search_movies_success(mock_get):
+def test_search_movies_success_basic(mock_get):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {
         "Search": [{"Title": "Inception", "Year": "2010", "imdbID": "tt1375666"}]
@@ -108,6 +108,13 @@ def test_search_movies_returns_expected_fields(mock_get):
         assert "imdbID" in movie
         assert "Year" in movie
         assert "Type" in movie
+
+@patch("app.omdb_client.requests.get")
+def test_search_movies_timeout(mock_get):
+    mock_get.side_effect = Timeout("Request timed out")
+
+    with pytest.raises(Timeout):
+        search_movies("Inception")
 
 # Test fetching movie details by IMDb ID
 @patch("app.omdb_client.requests.get")
