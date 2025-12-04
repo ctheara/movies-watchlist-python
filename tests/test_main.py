@@ -3,7 +3,9 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from app.main import app
+import os
 
+os.environ["DB_CONNECTION_STRING"] = "sqlite:///:memory:"
 client = TestClient(app)
 
 # Mock database dependency
