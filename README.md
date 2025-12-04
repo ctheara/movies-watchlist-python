@@ -197,6 +197,74 @@ Example analytics response:
 
 Note: `app/analytics.py` currently prints the DataFrame for debugging and expects the CRUD helper `get_all_movies(db)` to return ORM model instances with attributes `title`, `genre`, `rating`, and `watched`.
 
+## Running unit tests
+
+The project includes comprehensive unit tests for all core modules.
+
+1. Install test dependencies (if not already installed):
+
+```
+python -m pip install pytest pytest-cov
+```
+
+2. Run all tests:
+
+```
+python -m pytest
+```
+
+3. Run tests with coverage report:
+
+```
+python -m pytest --cov=app --cov-report=html
+```
+
+4. Run specific test file:
+
+```
+python -m pytest tests/test_main.py -v
+```
+
+**Note:** Use `python -m pytest` instead of just `pytest` to ensure the correct Python environment is used and imports work properly.
+
+## Running with Docker
+
+Build and run the application in a Docker container:
+
+1. Build the Docker image:
+
+```
+docker build -t movies-watchlist .
+```
+
+2. Run the container with environment variables:
+
+```
+docker run -p 8000:8000 \
+  -e DB_CONNECTION_STRING="postgresql://user:password@host:5432/movies_db" \
+  -e OMDB_API_KEY="your_api_key" \
+  movies-watchlist
+```
+
+Or use a `.env` file:
+
+```
+docker run -p 8000:8000 --env-file .env movies-watchlist
+```
+
+3. Access the application:
+   - API: `http://localhost:8000`
+   - Interactive docs: `http://localhost:8000/docs`
+
+**PowerShell syntax (Windows):**
+
+```powershell
+docker run -p 8000:8000 `
+  -e DB_CONNECTION_STRING="your_connection_string" `
+  -e OMDB_API_KEY="your_api_key" `
+  movies-watchlist
+```
+
 ## Development notes
 
 - Config values are loaded from environment variables using `python-dotenv` (`app/config.py`).
