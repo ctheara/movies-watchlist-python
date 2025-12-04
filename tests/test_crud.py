@@ -60,7 +60,6 @@ def test_add_movie_duplicate(db):
     crud.add_movie(db, data)
 
     status, movie = crud.add_movie(db, data)  # Add again
-    print(status, movie)
 
     assert status == "already_exists"
 
