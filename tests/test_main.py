@@ -132,13 +132,13 @@ class TestAddMovieToWatchlist:
         
         response = client.post("/api/v1/movies", json={"imdb_id": "tt1375666"})
         
-        assert response.status_code == 200
+        assert response.status_code == 201
         assert response.json()["title"] == "Inception"
 
     @patch('app.main.get_db', mock_get_db)
     @patch('app.main.omdb_client.fetch_movie_by_id')
     def test_add_movie_not_found_in_omdb(self, mock_fetch):
-        mock_fetch.return_value = {"Response": "False", "Error": "Movie not found!"}
+        mock_fetch.return_value = None
         
         response = client.post("/api/v1/movies", json={"imdb_id": "tt0000000"})
         
@@ -151,7 +151,8 @@ class TestAddMovieToWatchlist:
     def test_add_movie_already_exists(self, mock_fetch, mock_add):
         mock_fetch.return_value = {
             "Title": "Inception",
-            "Response": "True"
+            "Year": "2010",
+            "imdbID": "tt1375666"
         }
         mock_add.return_value = ("already_exists", None)
         

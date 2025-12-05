@@ -41,9 +41,11 @@ def search_movies(title: str):
 def get_movie_details(imdb_id: str):
     try:
         movie = omdb_client.fetch_movie_by_id(imdb_id)
-        if not movie or movie.get("Response") == "False":
+        if not movie:
             raise HTTPException(status_code=404, detail="Movie not found")
         return movie
+    except HTTPException:
+        raise
     except Exception as e:
         logging.warning(f'Error fetching movie details: {e}')
         raise HTTPException(status_code=503, detail="Movie details service unavailable")
@@ -59,7 +61,7 @@ def get_watchlist(watched: Optional[bool] = None, db: Session = Depends(get_db))
 @app.post('/api/v1/movies', response_model=schemas.MovieResponse, status_code=201)
 def add_movie_to_watchlist(req_body: schemas.MovieCreate, db: Session = Depends(get_db)):
     movie_data = omdb_client.fetch_movie_by_id(req_body.imdb_id)
-    if not movie_data or movie_data.get("Response") == "False":
+    if not movie_data:
         raise HTTPException(status_code=404, detail="Movie not found")
     
     status, movie = crud.add_movie(db, movie_data)

@@ -24,13 +24,13 @@ def test_search_movies_success_multiple_results(mock_get):
     results = search_movies(title_to_search)
 
     assert results == MOCK_SEARCH_SUCCESS["Search"]
-    expected_url = "http://www.omdbapi.com/"
+    expected_url = "https://www.omdbapi.com/"
     expected_params = {
         "apikey": ANY,
         "s": title_to_search,
         "page": 1
     }
-    mock_get.assert_called_once_with(expected_url, params=expected_params)
+    mock_get.assert_called_once_with(expected_url, params=expected_params, timeout=10)
 
 @patch("app.omdb_client.requests.get")
 def test_search_movies_success_basic(mock_get):
@@ -73,8 +73,9 @@ def test_search_movies_empty_title(mock_get):
     assert results == []
     
     mock_get.assert_called_once_with(
-        'http://www.omdbapi.com/',
-        params={'apikey': ANY, 's': '', 'page': 1}
+        'https://www.omdbapi.com/',
+        params={'apikey': ANY, 's': '', 'page': 1},
+        timeout=10
     )
 
 # Test searching for movies with special characters
@@ -89,8 +90,9 @@ def test_search_movies_special_characters(mock_get):
     
     assert results == expected_data
     mock_get.assert_called_once_with(
-        'http://www.omdbapi.com/',
-        params={'apikey': ANY, 's': title_with_chars, 'page': 1}
+        'https://www.omdbapi.com/',
+        params={'apikey': ANY, 's': title_with_chars, 'page': 1},
+        timeout=10
     )
 
 # Verify that searching movies returns expected fields
@@ -141,17 +143,18 @@ def test_fetch_movie_raises_http_error_on_status(mock_get):
     with pytest.raises(HTTPError):
         fetch_movie_by_id("tt1375666")
     mock_get.assert_called_once_with(
-        'http://www.omdbapi.com/',
-        params={'apikey': ANY, 'i': 'tt1375666', 'plot': 'full'}
+        'https://www.omdbapi.com/',
+        params={'apikey': ANY, 'i': 'tt1375666', 'plot': 'full'},
+        timeout=10
     )
 
-# Test invalid IMDb ID returns error
+# Test invalid IMDb ID returns None
 @patch("app.omdb_client.requests.get")
 def test_fetch_movie_not_found(mock_get):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {"Response": "False", "Error": "Movie not found!"}
     movie = fetch_movie_by_id("invalidid")
-    assert movie["Response"] == "False"
+    assert movie is None
 
 # Verify that fetching movie details returns expected fields
 @patch("app.omdb_client.requests.get")
@@ -172,7 +175,7 @@ def test_fetch_movie_returns_expected_fields(mock_get):
     assert "imdbRating" in movie
     assert movie["imdbID"] == "tt1375666"
 
-# Test fetching movie details with empty IMDb ID
+# Test fetching movie details with empty IMDb ID returns None
 @patch("app.omdb_client.requests.get")
 def test_fetch_movie_empty_id(mock_get):
     MOCK_ERROR_RESPONSE = {"Response": "False", "Error": "Incorrect IMDb ID."}
@@ -181,10 +184,11 @@ def test_fetch_movie_empty_id(mock_get):
     
     movie = fetch_movie_by_id("")
     
-    assert movie == MOCK_ERROR_RESPONSE
+    assert movie is None
     mock_get.assert_called_once_with(
-        'http://www.omdbapi.com/',
-        params={'apikey': ANY, 'i': '', 'plot': 'full'}
+        'https://www.omdbapi.com/',
+        params={'apikey': ANY, 'i': '', 'plot': 'full'},
+        timeout=10
     )
 
 # Test fetching movie details but imdbRating is "N/A"
