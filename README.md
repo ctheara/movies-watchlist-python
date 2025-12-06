@@ -35,12 +35,25 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-3. Create a `.env` file in the project root with at least these variables:
+3. Create a `.env` file in the project root with these environment variables:
 
 ```
 DB_CONNECTION_STRING=postgresql://user:password@localhost:5432/movies_db
 OMDB_API_KEY=your_omdb_api_key_here
 ```
+
+**Environment Variables:**
+
+- `DB_CONNECTION_STRING` (required): PostgreSQL database connection string. Format: `postgresql://username:password@host:port/database_name`
+
+  - Example: `postgresql://postgres:mypassword@localhost:5432/movies_db`
+  - For cloud databases (e.g., Supabase): Use the connection pooler URL provided by your service
+
+- `OMDB_API_KEY` (required): Your OMDb API key for fetching movie data
+  - Get a free API key at: http://www.omdbapi.com/apikey.aspx
+  - Example: `88d32a4d`
+
+**Note:** The `.env` file should never be committed to version control. It's already included in `.gitignore`.
 
 4. Initialize the database (creates tables defined in `app/models.py`):
 
@@ -55,6 +68,20 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Interactive docs: `http://127.0.0.1:8000/docs`
+
+## API Routes
+
+| Method | Route                              | Description                                                                    |
+| ------ | ---------------------------------- | ------------------------------------------------------------------------------ |
+| GET    | `/api/v1/search/{title}`           | Search for movies by title using OMDb API                                      |
+| GET    | `/api/v1/movies/{imdb_id}`         | Get detailed information for a specific movie by IMDb ID                       |
+| GET    | `/api/v1/movies/`                  | Get all movies in watchlist (optional `?watched=true/false` filter)            |
+| POST   | `/api/v1/movies`                   | Add a movie to the watchlist by IMDb ID                                        |
+| PATCH  | `/api/v1/movies/{imdb_id}/watched` | Update watched status for a movie (requires `?watched=true/false` query param) |
+| DELETE | `/api/v1/movies/{imdb_id}`         | Remove a movie from the watchlist                                              |
+| GET    | `/api/v1/analytics`                | Get analytics and statistics about your watchlist                              |
+
+![Swagger UI](swagger_ui.png)
 
 ## Example requests & responses
 
@@ -190,7 +217,7 @@ Example analytics response:
 {
   "average_rating": 7.95,
   "most_frequent_genre": "Drama",
-  "number_watched": 12,
+  "number_watched": 8,
   "total_movies": 20
 }
 ```
